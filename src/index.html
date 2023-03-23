@@ -8,7 +8,7 @@
     <title>Image search</title>
   </head>
   <body>
-    <form class="bg-blue-800 p-6 dark:bg-neutral-800">
+    <form id="search-form" class="bg-blue-800 p-6 dark:bg-neutral-800">
       <label
         for="default-search"
         class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
@@ -49,6 +49,16 @@
         </button>
       </div>
     </form>
+
+    <div class="flex min-h-screen w-full flex-wrap content-center justify-center p-5 bg-gray-200">
+      <div id="gallery" class="grid grid-cols-4 gap-3"></div>
+      <button
+        id="show-more"
+        class="hidden block my-4 w-1/3 h-15 text-xl uppercase mx-auto shadow bg-indigo-800 hover:bg-indigo-700 focus:shadow-outline focus:outline-none text-white text-xs py-3 px-10 rounded"
+      >
+        Show more
+      </button>
+    </div>
 
     <script src="index.js" type="module"></script>
   </body>
