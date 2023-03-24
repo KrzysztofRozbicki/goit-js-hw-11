@@ -2,7 +2,7 @@ import axios from 'axios';
 import Notiflix from 'notiflix';
 import { createImage } from './createElement.js';
 import SimpleLightbox from 'simplelightbox';
-import MoveTo from 'moveto/src/moveTo.js';
+import MoveTo from 'moveto';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 
 const API_KEY = '30370578-997578adb70a7e834e9536c05';
