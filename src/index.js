@@ -2,7 +2,7 @@ import axios from 'axios';
 import Notiflix from 'notiflix';
 import { createImage } from './createElement.js';
 import SimpleLightbox from 'simplelightbox';
-import MoveTo from 'moveto';
+// import MoveTo from 'moveto';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 
 const API_KEY = '30370578-997578adb70a7e834e9536c05';
@@ -12,9 +12,9 @@ const searchFormEl = document.getElementById('search-form');
 const galleryEl = document.getElementById('gallery');
 const showMoreEl = document.getElementById('show-more');
 
-const moveTo = new MoveTo({
-  duration: 5000,
-});
+// const moveTo = new MoveTo({
+//   duration: 5000,
+// });
 
 // let variables to control the pagination and query Search
 let currentPage = 1;
@@ -60,7 +60,7 @@ const showMorePhotos = async () => {
     const data = await fetchPhotos();
     data.hits.forEach(photo => createImage(galleryEl, showMoreEl, photo));
     new SimpleLightbox('#gallery a');
-    moveTo.move(showMoreEl);
+    // moveTo.move(showMoreEl);
   } catch (error) {
     Notiflix.Notify.warning("We're sorry, but you've reached the end of search results.");
   }
