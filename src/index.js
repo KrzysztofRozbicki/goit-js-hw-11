@@ -12,92 +12,70 @@ const searchFormEl = document.getElementById('search-form');
 const galleryEl = document.getElementById('gallery');
 const showMoreEl = document.getElementById('show-more');
 
-// let variable to control the pagination and query Search
-let page = 1;
-let querySearch = '';
-let totalPages = 0;
+const moveTo = new MoveTo({
+  duration: 5000,
+});
 
-const fetchPhotos = () => {
-  const searchParams = new URLSearchParams({
+// let variables to control the pagination and query Search
+let currentPage = 1;
+let totalPages = 0;
+let querySearch = '';
+
+const createSearchParams = () =>
+  new URLSearchParams({
     key: API_KEY,
     q: querySearch,
     image_type: 'photo',
     orientation: 'horizontal',
     safesearch: true,
-    page: page,
+    page: currentPage,
     per_page: LIMIT,
   });
-  return fetch(API_URL + searchParams)
-    .then(res => {
-      if (!res.ok) {
-        throw new Error(res.status);
-      }
-      return res.json();
-    })
-    .catch(error => console.log(error));
-};
 
-const createPhotoArray = data => {
-  if (data.hits.length === 0) throw new Error();
-  const photoArray = data.hits.map(
-    ({ webformatURL, largeImageURL, tags, likes, views, comments, downloads }) => ({
-      webformatURL,
-      largeImageURL,
-      tags,
-      likes,
-      views,
-      comments,
-      downloads,
-    })
-  );
-  return photoArray;
-};
-
-const getPictures = () => {
-  fetchPhotos()
-    .then(data => {
-      totalPages = data.totalHits / LIMIT;
-      Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
-      createPhotoArray(data).forEach(photo => createImage(galleryEl, showMoreEl, photo));
-    })
-    .catch(error =>
-      Notiflix.Notify.failure(
-        'Sorry, there are no images matching your search query. Please try again.'
-      )
-    )
-    .then(() => new SimpleLightbox('#gallery a'));
-};
-
-const showMore = () => {
-  if (page > totalPages) {
-    Notiflix.Notify.warning("We're sorry, but you've reached the end of search results.");
-    return;
+const fetchPhotos = async () => {
+  try {
+    const response = await axios.get(API_URL + createSearchParams());
+    if (response.data.hits.length === 0) throw new Error();
+    return response.data;
+  } catch (error) {
+    Notiflix.Notify.failure(
+      'Sorry, there are no images matching your search query. Please try again.'
+    );
   }
-  page++;
-  const moveTo = new MoveTo({
-    duration: 5000,
-  });
-
-  fetchPhotos()
-    .then(data =>
-      createPhotoArray(data).forEach(photo => createImage(galleryEl, showMoreEl, photo))
-    )
-    .then(() => new SimpleLightbox('#gallery a'))
-    .then(() => moveTo.move(showMoreEl));
 };
 
-const resetOnSubmit = event => {
+const createFirstPhotos = async () => {
+  const data = await fetchPhotos();
+  Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
+  totalPages = Math.ceil(data.totalHits / LIMIT);
+  data.hits.forEach(photo => createImage(galleryEl, showMoreEl, photo));
+  new SimpleLightbox('#gallery a');
+};
+
+const showMorePhotos = async () => {
+  currentPage++;
+  console.log(currentPage, totalPages);
+  try {
+    if (currentPage > totalPages) throw new Error(error);
+    const data = await fetchPhotos();
+    data.hits.forEach(photo => createImage(galleryEl, showMoreEl, photo));
+    new SimpleLightbox('#gallery a');
+    moveTo.move(showMoreEl);
+  } catch (error) {
+    Notiflix.Notify.warning("We're sorry, but you've reached the end of search results.");
+  }
+};
+
+const createGallery = event => {
   event.preventDefault();
   querySearch = event.currentTarget.elements.searchQuery.value;
-  page = 1;
+  currentPage = 1;
   totalPages = 0;
   galleryEl.innerHTML = '';
   showMoreEl.classList.add('hidden');
+  createFirstPhotos();
 };
 
-searchFormEl.addEventListener('submit', event => {
-  resetOnSubmit(event);
-  getPictures();
-});
+searchFormEl.addEventListener('submit', createGallery);
 
-showMoreEl.addEventListener('click', () => showMore());
+showMoreEl.addEventListener('click', () => showMorePhotos());
