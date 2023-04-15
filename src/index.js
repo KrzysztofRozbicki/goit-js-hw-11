@@ -144,7 +144,7 @@ const loadNewPhotos = () => {
 };
 
 const drawPhoto = pictures => {
-  return (drawPicture = pictures.data.hits
+  return pictures.data.hits
     .map(
       picture => `
     <div class="photo-card border rounded shadow-lg">
@@ -169,7 +169,7 @@ const drawPhoto = pictures => {
         </div>
     </div>`
     )
-    .join(''));
+    .join('');
 };
 
 searchButtonEl.addEventListener('click', e => {
